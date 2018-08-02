@@ -1,5 +1,5 @@
 //Dinic O(VE)
-const int N = 1000
+const int N = 1000;
 
 class edge{
 public:
