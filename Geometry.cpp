@@ -1,61 +1,181 @@
+#include <bits/stdc++.h>
+#include <algorithm>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <iostream>
+#include <vector>
+#include <cassert>
+
+using namespace std;
+typedef long long ll;
+
 const double pi = acos (-1.0);
-const double eps = 1e-8;
 
-int dblcmp (double d){
-    if (fabs (d) < eps) return 0;
-    return d > eps ? 1 : -1;
-}
-
-struct Vector {
-    double x, y;
-
-    Vector (){}
-    Vector (double a, double b){
-        x = a; y = b;
+typedef double T;
+struct pt{
+    T x, y;
+    pt (){}
+    pt (T _x, T _y){
+        x = _x; y = _y;
     }
-
-    Vector operator + (Vector a){
-        return Vector (x + a.x, y + a.y);
+    pt operator + (pt p){
+        return pt (x + p.x, y + p.y);
     }
-
-    Vector operator - (Vector a){
-        return Vector (x - a.x, y - a.y);
+    pt operator - (pt p){
+        return pt (x - p.x, y - p.y);
     }
-
-    Vector operator * (double t){
-        return Vector (x * t, y * t);
+    pt operator * (T d){
+        return pt (x * d, y * d);
     }
-
-    Vector operator / (double t){
-        return Vector (x / t, y / t);
-    }
-
-    bool operator == (Vector a){
-        return (dblcmp (a.x - x) == 0 and dblcmp (a.y - y) == 0);
-    }
-
-    double dot (Vector a){
-        return (x * a.x + y * a.y);
-    }
-
-    double dist (){
-        return sqrt (dot (*this));
+    pt operator / (T d){
+        return pt (x / d, y / d);
     }
 };
 
-double triArea (Vector a, Vector b, Vector c){
-    return (a.cross (b) + b.cross (c) - c.cross (a)) / 2.0;
+T sq (pt p){
+    return p.x * p.x + p.y * p.y;
 }
 
-double polygonArea (vector <Vector>& P){
-    double ret = 0.0;
-    for (int i = 0; i < (int) P.size() - 1; i++){
-        ret += P[i].cross (P[i + 1]);
+double abs (pt p){
+    return sqrt (sq (p));
+}
+
+pt translate (pt v, pt p) {
+    return p + v;
+}
+
+pt rot (pt p, double a){
+    return pt (p.x * cos(a) - p.y * sin (a), p.x * sin (a) + p.y * cos (a));
+}
+
+pt perp (pt p){
+    return pt (-p.y, p.x);
+}
+
+T dot (pt v, pt w){
+    return v.x * w.x + v.y * w.y;
+}
+
+bool isPerp (pt v, pt w){
+    return dot (v, w) == 0;
+}
+
+double smallAngle (pt v, pt w){
+    double cosTheta = dot (v, w) / abs (v) / abs (w);
+    if (cosTheta < -1) cosTheta = -1;
+    if (cosTheta > 1) cosTheta = 1;
+    return acos (cosTheta);
+}
+
+T cross (pt v, pt w){
+    return v.x * w.y - v.y * w.x;
+}
+
+T orient (pt a, pt b, pt c){
+    return cross (b - a, c - a);
+}
+
+bool inAngle (pt a, pt b, pt c, pt x){
+    assert (orient (a, b, c) != 0);
+    if (orient (a, b, c) < 0) swap (b, c);
+    return orient (a, b, x) >= 0 and orient (a, c, x) <= 0;
+}
+
+bool isConvex (vector <pt>& p){
+    bool hasPos = false, hasNeg = false;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int o = orient (p[i], p[(i + 1) % n], p[(i + 2) % n]);
+        if (o > 0) hasPos = true;
+        if (o < 0) hasNeg = true;
     }
-    return ret / 2.0;
+    return !(hasPos and hasNeg);
 }
 
-double circleCircleArea (Vector a, double r1, Vector b, double r2){  //not sure of this function, strong dataset like codeforces gives WA
+double areaTriangle (pt a, pt b, pt c){
+    return abs (cross (b - a, c - a)) / 2.0;
+}
+
+double areaPolygon (vector <pt>& p){
+    double area = 0.0;
+    for (int i = 0, n = p.size(); i < n; i++){
+        area += cross (p[i], p[(i + 1) % n]);
+    }
+    return abs (area) / 2.0;
+}
+
+struct line {
+    pt v; T c;
+    line (){}
+    //From points P and Q
+    line (pt p, pt q){
+        v = (q - p); c = cross (v, p);
+    }
+    //From equation ax + by = c
+    line (T a, T b, T c){
+        v = pt (b, -a); c = c;
+    }
+    //From direction vector v and offset c
+    line (pt v, T c){
+        v = v; c = c;
+    }
+
+    //These work with T = int / double
+    T side (pt p);
+    double dist (pt p);
+    double sqDist (pt p);
+    line perpThrough (pt p);
+    bool cmpProj (pt p, pt q);
+    line translate (pt t);
+
+    //These require T = double
+    line shiftLeft (double dist);
+    pt proj (pt p);
+    pt sym (pt p);
+};
+
+T line :: side (pt p){
+    return cross (v, p) - c;
+}
+
+double line :: dist (pt p){
+    return abs (side (p)) / abs (v);
+}
+
+double line :: sqDist (pt p){
+    return side (p) * side (p) / (double) sq (v);
+}
+
+line line :: perpThrough (pt p){
+    return line (p, p + perp (v));
+}
+
+bool line :: cmpProj (pt p, pt q){
+    return dot (v, p) < dot (v, q);
+}
+
+line line :: translate (pt t){
+    return line (v, c + cross (v, t));
+}
+
+line line :: shiftLeft (double dist){
+    return line (v, c + dist * abs (v));
+}
+
+bool inter (line l1, line l2, pt& out){
+    T d = cross (l1.v, l2.v);
+    if (d == 0) return false;
+    out = (l2.v * l1.c - l1.v * l2.c) / d;
+    return true;
+}
+
+pt circumCenter (pt a, pt b, pt c){
+    b = b - a; c = c - a;
+    assert (cross (b, c) != 0);
+    return a + perp (b * sq (c) - c * sq (b)) / cross (b, c) / 2;
+}
+
+double circleCircleArea (Vector a, double r1, Vector b, double r2){  //sometimes long double may reduce precision loss
     double c = (a - b).dist();
     if (c >= (r1 + r2)) return 0.0; //fully outside
     if (c <= fabs (r1 - r2)){
