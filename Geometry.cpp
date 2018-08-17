@@ -1,4 +1,3 @@
-#include <bits/stdc++.h>
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -104,6 +103,7 @@ double areaPolygon (vector <pt>& p){
     return abs (area) / 2.0;
 }
 
+//Line
 struct line {
     pt v; T c;
     line (){}
@@ -169,6 +169,39 @@ bool inter (line l1, line l2, pt& out){
     return true;
 }
 
+//Segment
+bool inDisk (pt a, pt b, pt p){
+    return dot (a - p, b - p) <= 0;
+}
+
+bool onSegment (pt a, pt b, pt p){
+    return orient (a, b, p) == 0 and inDisk (a, b, p);
+}
+
+bool properInter (pt a, pt b, pt c, pt d, pt& i){
+    double oa = orient (c, d, a),
+           ob = orient (c, d, b),
+           oc = orient (a, b, c),
+           od = orient (a, b, d);
+
+    //Proper intersection exists iff opposite signs
+    if (oa * ob < 0 and oc * od < 0){
+        i = (a * ob - b * oa) / (ob - oa);
+        return true;
+    }
+    return false;
+}
+
+bool inters (pt a, pt b, pt c, pt d){
+    pt out;
+    if (properInter (a, b, c, d, out)) return true;
+    if (onSegment (c, d, a)) return true;
+    if (onSegment (c, d, b)) return true;
+    if (onSegment (a, b, c)) return true;
+    if (onSegment (a, b, d)) return true;
+}
+
+//Circle
 pt circumCenter (pt a, pt b, pt c){
     b = b - a; c = c - a;
     assert (cross (b, c) != 0);
