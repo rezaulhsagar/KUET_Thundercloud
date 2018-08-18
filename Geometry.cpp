@@ -162,6 +162,14 @@ line line :: shiftLeft (double dist){
     return line (v, c + dist * abs (v));
 }
 
+bool areParallel (line l1, line l2){
+    return (l1.v.x * l2.v.y == l1.v.y * l2.v.x);
+}
+
+bool areSame (line l1, line l2){
+    return areParallel (l1, l2) and (l1.v.x * l2.c == l2.v.x * l1.c) and (l1.v.y * l2.c == l2.v.y * l1.c);
+}
+
 bool inter (line l1, line l2, pt& out){
     T d = cross (l1.v, l2.v);
     if (d == 0) return false;
