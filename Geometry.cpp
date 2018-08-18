@@ -30,6 +30,10 @@ struct pt{
     pt operator / (T d){
         return pt (x / d, y / d);
     }
+    bool operator < (const pt& p)const{
+        if (x == p.x) return y < p.y;
+        return x < p.x;
+    }
 };
 
 T sq (pt p){
@@ -232,4 +236,25 @@ double circleCircleArea (Vector a, double r1, Vector b, double r2){  //sometimes
     ret -= (0.5 * r1 * r1 * sin (t1));
     ret -= (0.5 * r2 * r2 * sin (t2));
     return ret;
+}
+
+//Convex Hull - Monotone Chain
+pt H[100000 + 5];
+int st;
+void convexHull (vector <pt>& points){
+    sort (points.begin(), points.end());
+    st = 0;
+    for (int i = 0, sz = points.size(); i < sz; i++){
+        while (st >= 2 and orient (H[st - 2], H[st - 1], points[i]) > 0){
+            st--;
+        }
+        H[st++] = points[i];
+    }
+    int taken = st - 1;
+    for (int i = points.size() - 2; i >= 0; i--){
+        while (st >= taken + 2 and orient (H[st - 2], H[st - 1], points[i]) > 0){
+            st--;
+        }
+        H[st++] = points[i];
+    }
 }
