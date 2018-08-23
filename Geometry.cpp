@@ -99,12 +99,23 @@ double areaTriangle (pt a, pt b, pt c){
     return abs (cross (b - a, c - a)) / 2.0;
 }
 
-double areaPolygon (vector <pt>& p){
+double areaPolygon (const vector <pt>& p){
     double area = 0.0;
     for (int i = 0, n = p.size(); i < n; i++){
         area += cross (p[i], p[(i + 1) % n]);
     }
     return abs (area) / 2.0;
+}
+
+bool pointInPolygon(const vector<pt>& p, pt q){
+    bool c = false;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int j = (i + 1) % p.size();
+        if ((p[i].y <= q.y and q.y < p[j].y or p[j].y <= q.y and q.y < p[i].y) and
+            q.x < p[i].x + (p[j].x - p[i].x) * (q.y - p[i].y) / (p[j].y - p[i].y))
+                c = !c;
+    }
+    return c;
 }
 
 //Line
@@ -211,6 +222,7 @@ bool inters (pt a, pt b, pt c, pt d){
     if (onSegment (c, d, b)) return true;
     if (onSegment (a, b, c)) return true;
     if (onSegment (a, b, d)) return true;
+    return false;
 }
 
 //Circle
