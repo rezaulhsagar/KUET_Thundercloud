@@ -227,7 +227,7 @@ bool inters (pt a, pt b, pt c, pt d){
 
 int boundaryPoints (pt a, pt b){
     //requires int representation
-    return __gcd (abs (a.x - b.x), abs (a.y - b.y));
+    return __gcd (abs (a.x - b.x), abs (a.y - b.y)) + 1;
 }
 
 //Circle
