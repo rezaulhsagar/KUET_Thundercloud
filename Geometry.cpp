@@ -7,32 +7,30 @@
 #include <cassert>
 
 using namespace std;
-typedef long long ll;
 
 const double pi = acos (-1.0);
+const double eps = 1e-8;
 
 typedef double T;
 struct pt{
     T x, y;
     pt (){}
-    pt (T _x, T _y){
-        x = _x; y = _y;
-    }
-    pt operator + (pt p){
+    pt (T _x, T _y) : x(_x), y(_y){}
+    pt operator + (const pt& p) const {
         return pt (x + p.x, y + p.y);
     }
-    pt operator - (pt p){
+    pt operator - (const pt& p) const {
         return pt (x - p.x, y - p.y);
     }
-    pt operator * (T d){
+    pt operator * (const T& d) const {
         return pt (x * d, y * d);
     }
-    pt operator / (T d){
+    pt operator / (const T& d) const {
         return pt (x / d, y / d);
     }
-    bool operator < (const pt& p)const{
-        if (x == p.x) return y < p.y;
-        return x < p.x;
+    bool operator < (const pt& p) const {
+        if (x != p.x) return x < p.x;
+        return y < p.y;
     }
 };
 
@@ -104,10 +102,10 @@ double areaPolygon (const vector <pt>& p){
     for (int i = 0, n = p.size(); i < n; i++){
         area += cross (p[i], p[(i + 1) % n]);
     }
-    return abs (area) / 2.0;
+    return fabs (area) / 2.0;
 }
 
-bool pointInPolygon(const vector<pt>& p, pt q){
+bool pointInPolygon(const vector <pt>& p, pt q){
     bool c = false;
     for (int i = 0, n = p.size(); i < n; i++){
         int j = (i + 1) % p.size();
@@ -116,6 +114,17 @@ bool pointInPolygon(const vector<pt>& p, pt q){
                 c = !c;
     }
     return c;
+}
+
+pt centroidPolygon (const vector <pt>& p){
+    pt c (0,0);
+    double scale = 6.0 * areaPolygon(p);
+//    if (scale < eps) return c;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int j = (i + 1) % n;
+        c = c + (p[i] + p[j]) * cross (p[i], p[j]);
+    }
+    return c / scale;
 }
 
 //Line
@@ -225,10 +234,10 @@ bool inters (pt a, pt b, pt c, pt d){
     return false;
 }
 
-int boundaryPoints (pt a, pt b){
-    //requires int representation
-    return __gcd (abs (a.x - b.x), abs (a.y - b.y)) + 1;
-}
+//int latticePoints (pt a, pt b){
+//    //requires int representation
+//    return __gcd (abs (a.x - b.x), abs (a.y - b.y)) + 1;
+//}
 
 //Circle
 pt circumCenter (pt a, pt b, pt c){
@@ -237,41 +246,21 @@ pt circumCenter (pt a, pt b, pt c){
     return a + perp (b * sq (c) - c * sq (b)) / cross (b, c) / 2;
 }
 
-double circleCircleArea (Vector a, double r1, Vector b, double r2){  //sometimes long double may reduce precision loss
-    double c = (a - b).dist();
-    if (c >= (r1 + r2)) return 0.0; //fully outside
-    if (c <= fabs (r1 - r2)){
-        if (r2 < r1) return pi * r2 * r2;
-        return pi * r1 * r1; //fully inside
-    }
-    //partially overlapped
-    double ret = 0.0;
-    double t1 = 2.0 * (acos ((r1 * r1 + c * c - r2 * r2) / (2.0 * r1 * c)));
-    double t2 = 2.0 * (acos ((r2 * r2 + c * c - r1 * r1) / (2.0 * r2 * c)));
-    ret += (0.5 * t1 * r1 * r1);
-    ret += (0.5 * t2 * r2 * r2);
-    ret -= (0.5 * r1 * r1 * sin (t1));
-    ret -= (0.5 * r2 * r2 * sin (t2));
-    return ret;
-}
-
 //Convex Hull - Monotone Chain
 pt H[100000 + 5];
-int st;
-void convexHull (vector <pt>& points){
+int monotoneChain (vector <pt>& points){
     sort (points.begin(), points.end());
-    st = 0;
+    int st = 0;
     for (int i = 0, sz = points.size(); i < sz; i++){
-        while (st >= 2 and orient (H[st - 2], H[st - 1], points[i]) > 0){
+        while (st >= 2 and orient (H[st - 2], H[st - 1], points[i]) < 0)
             st--;
-        }
         H[st++] = points[i];
     }
     int taken = st - 1;
     for (int i = points.size() - 2; i >= 0; i--){
-        while (st >= taken + 2 and orient (H[st - 2], H[st - 1], points[i]) > 0){
+        while (st >= taken + 2 and orient (H[st - 2], H[st - 1], points[i]) < 0)
             st--;
-        }
         H[st++] = points[i];
     }
+    return st;
 }
