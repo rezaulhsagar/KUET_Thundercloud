@@ -246,6 +246,16 @@ pt circumCenter (pt a, pt b, pt c){
     return a + perp (b * sq (c) - c * sq (b)) / cross (b, c) / 2;
 }
 
+bool circle2PtsRad (pt p1, pt p2, double r, pt& c){
+    double d2 = sq (p1 - p2);
+    double det = r * r / d2 - 0.25;
+    if (det < 0.0) return false;
+    double h = sqrt (det);
+    c.x = (p1.x + p2.x) * 0.5 + (p1.y - p2.y) * h;
+    c.y = (p1.y + p2.y) * 0.5 + (p2.x - p1.x) * h;
+    return true;
+}
+
 //Convex Hull - Monotone Chain
 pt H[100000 + 5];
 int monotoneChain (vector <pt>& points){
