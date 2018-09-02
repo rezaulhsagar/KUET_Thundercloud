@@ -234,6 +234,22 @@ bool inters (pt a, pt b, pt c, pt d){
     return false;
 }
 
+double segPoint (pt a, pt b, pt p){
+    if (a != b){
+        line l (a, b);
+        if (l.cmpProj(a, p) and l.cmpProj(p, b))
+            return l.dist(p);
+    }
+    return min (abs (p - a), abs (p - b));
+}
+
+double segSeg (pt a, pt b, pt c, pt d){
+    pt dummy;
+    if (properInter(a, b, c, d, dummy))
+        return 0;
+    return min (min (min (segPoint(a, b, c), segPoint(a, b, d)), segPoint(c, d, a)), segPoint(c, d, b));
+}
+
 //int latticePoints (pt a, pt b){
 //    //requires int representation
 //    return __gcd (abs (a.x - b.x), abs (a.y - b.y)) + 1;
