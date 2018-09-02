@@ -207,6 +207,10 @@ bool inter (line l1, line l2, pt& out){
     return true;
 }
 
+pt line :: proj (pt p){
+    return p - perp (v) * side (p) / sq (v);
+}
+
 //Segment
 bool inDisk (pt a, pt b, pt p){
     return dot (a - p, b - p) <= 0;
