@@ -28,6 +28,12 @@ struct pt{
     pt operator / (const T& d) const {
         return pt (x / d, y / d);
     }
+    pt operator == (const pt& p) const {
+        return x == p.x and y == p.y;
+    }
+    pt operator != (const pt& p) const {
+        return !(x == p.x and y == p.y);
+    }
     bool operator < (const pt& p) const {
         if (x != p.x) return x < p.x;
         return y < p.y;
