@@ -1,10 +1,11 @@
 #include <algorithm>
+#include <cassert>
 #include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <vector>
-#include <cassert>
 
 using namespace std;
 
@@ -52,6 +53,10 @@ pt translate (pt v, pt p) {
     return p + v;
 }
 
+pt scale (pt c, double factor, pt p){
+    return c + (p - c) * factor;
+}
+
 pt rot (pt p, double a){
     return pt (p.x * cos(a) - p.y * sin (a), p.x * sin (a) + p.y * cos (a));
 }
@@ -89,50 +94,6 @@ bool inAngle (pt a, pt b, pt c, pt x){
     return orient (a, b, x) >= 0 and orient (a, c, x) <= 0;
 }
 
-bool isConvex (vector <pt>& p){
-    bool hasPos = false, hasNeg = false;
-    for (int i = 0, n = p.size(); i < n; i++){
-        int o = orient (p[i], p[(i + 1) % n], p[(i + 2) % n]);
-        if (o > 0) hasPos = true;
-        if (o < 0) hasNeg = true;
-    }
-    return !(hasPos and hasNeg);
-}
-
-double areaTriangle (pt a, pt b, pt c){
-    return abs (cross (b - a, c - a)) / 2.0;
-}
-
-double areaPolygon (const vector <pt>& p){
-    double area = 0.0;
-    for (int i = 0, n = p.size(); i < n; i++){
-        area += cross (p[i], p[(i + 1) % n]);
-    }
-    return fabs (area) / 2.0;
-}
-
-bool pointInPolygon(const vector <pt>& p, pt q){
-    bool c = false;
-    for (int i = 0, n = p.size(); i < n; i++){
-        int j = (i + 1) % p.size();
-        if ((p[i].y <= q.y and q.y < p[j].y or p[j].y <= q.y and q.y < p[i].y) and
-            q.x < p[i].x + (p[j].x - p[i].x) * (q.y - p[i].y) / (p[j].y - p[i].y))
-                c = !c;
-    }
-    return c;
-}
-
-pt centroidPolygon (const vector <pt>& p){
-    pt c (0,0);
-    double scale = 6.0 * areaPolygon(p);
-//    if (scale < eps) return c;
-    for (int i = 0, n = p.size(); i < n; i++){
-        int j = (i + 1) % n;
-        c = c + (p[i] + p[j]) * cross (p[i], p[j]);
-    }
-    return c / scale;
-}
-
 //Line
 struct line {
     pt v; T c;
@@ -161,7 +122,7 @@ struct line {
     //These require T = double
     line shiftLeft (double dist);
     pt proj (pt p);
-    pt sym (pt p);
+    pt refl (pt p);
 };
 
 T line :: side (pt p){
@@ -209,6 +170,17 @@ bool inter (line l1, line l2, pt& out){
 
 pt line :: proj (pt p){
     return p - perp (v) * side (p) / sq (v);
+}
+
+pt line :: refl (pt p){
+    return p - perp (v) * 2 * side (p) / sq (v);
+}
+
+line intBisector (line l1, line l2, bool interior){
+    assert (cross (l1.v, l2.v) != 0);
+    double sign = interior ? 1 : -1;
+    return line (l2.v / abs (l2.v) + l1.v * sign / abs (l1.v),
+                 l2.c / abs (l2.v) + l1.c * sign / abs (l1.v));
 }
 
 //Segment
@@ -265,6 +237,50 @@ double segSeg (pt a, pt b, pt c, pt d){
 //    return __gcd (abs (a.x - b.x), abs (a.y - b.y)) + 1;
 //}
 
+bool isConvex (vector <pt>& p){
+    bool hasPos = false, hasNeg = false;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int o = orient (p[i], p[(i + 1) % n], p[(i + 2) % n]);
+        if (o > 0) hasPos = true;
+        if (o < 0) hasNeg = true;
+    }
+    return !(hasPos and hasNeg);
+}
+
+double areaTriangle (pt a, pt b, pt c){
+    return abs (cross (b - a, c - a)) / 2.0;
+}
+
+double areaPolygon (const vector <pt>& p){
+    double area = 0.0;
+    for (int i = 0, n = p.size(); i < n; i++){
+        area += cross (p[i], p[(i + 1) % n]);
+    }
+    return fabs (area) / 2.0;
+}
+
+bool pointInPolygon(const vector <pt>& p, pt q){
+    bool c = false;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int j = (i + 1) % p.size();
+        if ((p[i].y <= q.y and q.y < p[j].y or p[j].y <= q.y and q.y < p[i].y) and
+            q.x < p[i].x + (p[j].x - p[i].x) * (q.y - p[i].y) / (p[j].y - p[i].y))
+                c = !c;
+    }
+    return c;
+}
+
+pt centroidPolygon (const vector <pt>& p){
+    pt c (0,0);
+    double scale = 6.0 * areaPolygon(p);
+//    if (scale < eps) return c;
+    for (int i = 0, n = p.size(); i < n; i++){
+        int j = (i + 1) % n;
+        c = c + (p[i] + p[j]) * cross (p[i], p[j]);
+    }
+    return c / scale;
+}
+
 //Circle
 pt circumCenter (pt a, pt b, pt c){
     b = b - a; c = c - a;
@@ -280,6 +296,44 @@ bool circle2PtsRad (pt p1, pt p2, double r, pt& c){
     c.x = (p1.x + p2.x) * 0.5 + (p1.y - p2.y) * h;
     c.y = (p1.y + p2.y) * 0.5 + (p2.x - p1.x) * h;
     return true;
+}
+
+int circleLine (pt c, double r, line l, pair <pt,pt>& out){
+    double h2 = r * r - l.sqDist(c);
+    if (h2 < 0) return 0; // the line doesn't touch the circle;
+    pt p = l.proj (c);
+    pt h = l.v * sqrt (h2) / abs (l.v);
+    out = make_pair (p - h, p + h);
+    return 1 + (h2 > 0);
+}
+
+int circleCircle (pt c1, double r1, pt c2, double r2, pair <pt,pt>& out){
+    pt d = c2 - c1; double d2 = sq (d);
+    if (d2 == 0) { //concentric circles
+        assert (r1 != r2);
+        return 0;
+    }
+    double pd = (d2 + r1 * r1 - r2 * r2) / 2;
+    double h2 = r1 * r1 - pd * pd / d2; // h ^ 2
+    if (h2 < 0) return 0;
+    pt p = c1 + d * pd / d2, h = perp(d) * sqrt (h2 / d2);
+    out = make_pair (p - h, p + h);
+    return 1 + h2 > 0;
+}
+
+int tangents (pt c1, double r1, pt c2, double r2, bool inner, vector <pair <pt, pt >>& out){
+    if (inner) r2 = -r2;
+    pt d = c2 - c1;
+    double dr = r1 - r2, d2 = sq (d), h2 = d2 - dr * dr;
+    if (d2 == 0 or h2 < 0){
+        assert (h2 != 0);
+        return 0;
+    }
+    for (int sign : {-1, 1}){
+        pt v = pt (d * dr + perp (d) * sqrt (h2) * sign / d2);
+        out.push_back (make_pair (c1 + v * r1, c2 + v * r2));
+    }
+    return 1 + (h2 > 0);
 }
 
 //Convex Hull - Monotone Chain
