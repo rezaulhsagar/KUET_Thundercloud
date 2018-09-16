@@ -330,7 +330,7 @@ int tangents (pt c1, double r1, pt c2, double r2, bool inner, vector <pair <pt, 
         return 0;
     }
     for (int sign : {-1, 1}){
-        pt v = pt (d * dr + perp (d) * sqrt (h2) * sign / d2);
+        pt v = pt (d * dr + perp (d) * sqrt (h2) * sign) / d2;
         out.push_back (make_pair (c1 + v * r1, c2 + v * r2));
     }
     return 1 + (h2 > 0);
