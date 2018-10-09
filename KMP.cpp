@@ -1,7 +1,7 @@
 //KMP O(n + m)
-const int N = 1000000 + 6;
-char P[N], T[N];
-int b[N], n, m;
+const int maxn = 1000006;
+char P[maxn], T[maxn];
+int b[maxn], n, m;
 
 void kmpPreprocess (){
     int i = 0, j = -1;
