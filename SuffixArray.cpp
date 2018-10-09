@@ -36,7 +36,7 @@ void buildSA (){
     for (k = 1; k < n; k <<= 1){
         countingSort(k);
         countingSort(0);
-        tra[sa[i]] = r = 0;
+        tra[sa[0]] = r = 0;
         for (i = 1; i < n; i++){
             tra[sa[i]] = (ra[sa[i]] == ra[sa[i - 1]] and ra[sa[i] + k] == ra[sa[i - 1] + k]) ? r : ++r;
         }
