@@ -11,7 +11,7 @@ int lcp[maxn], plcp[maxn];
 
 void reset (){
     for (int i = 0; i < maxn; i++){
-        ra[i] = tra[i] = sa[i] = tsa[i] = c[i] = phi[i] = lcp[i] = plcp[i] = R[i] = 0;
+        ra[i] = tra[i] = sa[i] = tsa[i] = c[i] = phi[i] = lcp[i] = plcp[i] = 0;
     }
 }
 
