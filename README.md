@@ -1,2 +1,1 @@
-# NeverLucky_Templates
-Code library of KUET_NeverLucky
+# KUET_THUNDERCLOUD
