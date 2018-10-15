@@ -1,5 +1,7 @@
-//Dinic O(VE)
-const int N = 1000;
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 1003;
 
 class edge{
 public:
