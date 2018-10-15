@@ -1,4 +1,6 @@
-//KMP O(n + m)
+#include <bits/stdc++.h>
+using namespace std;
+
 const int maxn = 1000006;
 char P[maxn], T[maxn];
 int b[maxn], n, m;
