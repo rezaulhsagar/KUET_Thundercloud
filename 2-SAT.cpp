@@ -2,12 +2,12 @@
 using namespace std;
 typedef long long ll;
 
-const int mx = 21000;
+const int maxn = 21000;
 
 struct SCC {
-    vector <int> g[mx];
-    int disc[mx], low[mx], st[mx], cycle[mx], id[mx];
-    int visited[mx];
+    vector <int> g[maxn];
+    int disc[maxn], low[maxn], st[maxn], cycle[maxn], id[maxn];
+    int visited[maxn];
     int tail, t, cnt;
 
     SCC (){
