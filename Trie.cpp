@@ -1,4 +1,7 @@
-const int mx = 100000 + 5;
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 100005;
 
 struct Trie{
     int next[27][mx];
