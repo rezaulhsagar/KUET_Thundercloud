@@ -1,6 +1,8 @@
-//BIT
-const int N = 100000;
-int tree[N + 5];
+#include <bits/stdc++.h>
+using namespace std;
+
+const int maxn = 100005;
+int tree[maxn];
 
 void update (int idx, int val){
 	while (idx <= n){
