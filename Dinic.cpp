@@ -2,6 +2,7 @@
 using namespace std;
 
 const int maxn = 1003;
+const int inf = 100000000;
 
 class edge{
 public:
@@ -48,7 +49,7 @@ int dfs (int v, int flow){
     if (v == t) return flow;
     for (;ptr[v] < (int) g[v].size(); ptr[v]++){
         int id = g[v][ptr[v]], to = e[id].b;
-        if (d[to] 1= d[v] + 1) continue;
+        if (d[to] != d[v] + 1) continue;
         int pushed = dfs (to, min (flow, e[id].cap - e[id].flow));
         if (pushed){
             e[id].flow += pushed;
@@ -64,7 +65,7 @@ int dinic (){
     while (1){
         if (!bfs()) break;
         memset (ptr, 0, sizeof ptr);
-        while (int pushed = dfs(s, INF)){
+        while (int pushed = dfs(s, inf)){
             flow += pushed;
             if (pushed == 0) break;
         }
