@@ -12,8 +12,8 @@ public:
 };
 
 vector <edge> e;
-vector <int> g[N + 4];
-int s, t, d[N + 4], q[N + 4], ptr[N + 4];
+vector <int> g[maxn];
+int s, t, d[maxn], q[maxn], ptr[maxn];
 
 void add_edge(int a, int b, int cap){
     edge e1 = edge (a, b, cap, 0);
