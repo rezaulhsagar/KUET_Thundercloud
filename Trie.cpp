@@ -4,9 +4,9 @@ using namespace std;
 const int maxn = 100005;
 
 struct Trie{
-    int next[27][mx];
-    int endmark[mx];
-    bool created[mx];
+    int next[27][maxn];
+    int endmark[maxn];
+    bool created[maxn];
     int sz;
 
     void insertTrie (string& s){
