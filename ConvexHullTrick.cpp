@@ -64,7 +64,7 @@ struct Hull_Static{
     ll getminvalternary(ll x){ ///  minimum value with ternary search
         ll lo = 0;
         ll hi = (ll)M.size() - 1;
-        ll ans = inf;
+        ll ans = inf; ///change with problem 
         while(lo <= hi){
             ll mid1 = lo + (hi - lo) / 3;
             ll mid2 = hi - (hi - lo) / 3;
@@ -85,7 +85,7 @@ struct Hull_Static{
     ll getmaxvalternary(ll x){ /// maximum value with ternary search
         ll lo = 0;
         ll hi = (ll)M.size() - 1;
-        ll ans = -inf;
+        ll ans = -inf; ///change with problem
         while(lo <= hi){
             ll mid1 = lo + (hi - lo) / 3;
             ll mid2 = hi - (hi - lo) / 3;
