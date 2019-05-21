@@ -40,7 +40,9 @@ struct Hull_Static{
     }
 
     void add_line(ll m, ll c){ /// add line where m is given in decreasing order
-        if(M.size() > 0 and M.back() == m) return; /// same gradient, no need to add
+        //if(M.size() > 0 and M.back() == m) return; /// same gradient, no need to add
+        
+            ///above line added from tarango khan, this line cost me sevaral wa, but some code got ac with this
         M.push_back(m);
         C.push_back(c);
 
