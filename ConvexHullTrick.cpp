@@ -55,11 +55,11 @@ struct Hull_Static{
         return M[idx] * x + C[idx];
     }
 
-    ll getminval(ll x){ /// if queries are sorted, make sure all insertion first.
+    ll getminval(ll x){ /// if queries are non-decreasing order
         while(pointer <  (int)M.size() - 1 and getval(pointer + 1, x) < getval(pointer, x)) pointer++;
         return M[pointer] * x + C[pointer];
     }
-    ll getmaxval(ll x){ /// if queries are sorted, make sure all insertion first.
+    ll getmaxval(ll x){ 
         while(pointer <  (int)M.size() - 1 and getval(pointer + 1, x) > getval(pointer, x)) pointer++;
         return M[pointer] * x + C[pointer];
     }
