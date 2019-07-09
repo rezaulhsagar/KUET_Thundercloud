@@ -4,7 +4,6 @@
 #define MAXS 1000010
 #define MAXP 90000
 #define INFIN 1001001001
-
 #define pq priority_queue
 #define btc(x) __builtin_popcount(x)
 #define mp(x, y) make_pair(x, y)
@@ -23,7 +22,6 @@
 #define sec second
 #define SZ(a) (int)a.size()
 #define All(a) a.begin(),a.end()
-
 #define SIZE 1000
 #define REP(i,n) for(i=0; i<n; i++)
 #define REV(i,n) for(i=n; i>=0; i--)
