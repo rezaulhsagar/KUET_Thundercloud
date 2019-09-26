@@ -55,6 +55,11 @@ struct TwoSat{
     int n;
     SCC scc;
     vector <int> res;
+    
+    TwoSat(int a){
+        n = a;
+    }
+    
     inline int Not (int a){
         if (a > n) return a - n;
         return n + a;
