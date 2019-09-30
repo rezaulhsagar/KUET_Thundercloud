@@ -22,4 +22,10 @@ int main(){
     cout<<*X.find_by_order(2)<<endl; // 4
     cout<<*X.find_by_order(4)<<endl; // 16
     cout<<(end(X)==X.find_by_order(6))<<endl; // true
+    
+    cout<<X.order_of_key(-5)<<endl;  // 0
+    cout<<X.order_of_key(1)<<endl;   // 0
+    cout<<X.order_of_key(3)<<endl;   // 2
+    cout<<X.order_of_key(4)<<endl;   // 2
+    cout<<X.order_of_key(400)<<endl; // 5
 }
